@@ -26,7 +26,7 @@ jobs:
 
       matrix:
         # https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs
-        os: [ windows-latest ]
+        os: [ ubuntu-latest ]
         #os: [ ubuntu-latest, windows-latest ]
         node-version: [ 18.x ]
 
@@ -333,6 +333,7 @@ jobs:
         working-directory: ${{ github.workspace }}/ModLoader/mod/GameOriginalImagePack
         run: copy -Path "${{ github.workspace }}/DoL/img" -Destination "${{ github.workspace }}/ModLoader/mod/GameOriginalImagePack" -Recurse -Force
       - name: ReadGameVersion
+        if: runner.os == 'Windows'
         id: ReadGameVersion
         working-directory: ${{ github.workspace }}
         run: |
@@ -413,7 +414,7 @@ jobs:
       - name: Build DoL (Linux)
         if: runner.os != 'Windows'
         working-directory: ${{ github.workspace }}/DoL
-        run: ./compile.sh
+        run: ./compile.sh && cp Degrees\ of\ Lewdity\ *-dirty.html "Degrees of Lewdity VERSION.html"
 
       - name: Build DoL (Win)
         if: runner.os == 'Windows'
@@ -429,6 +430,19 @@ jobs:
 #          path: |
 #            ${{ github.workspace }}/DoL/devTools/tweego/storyFormats/sugarcube-2/format.js
 #            ${{ github.workspace }}/ModLoader/out/
+
+      # Make i18n builtin
+      - name: Inject i18n
+        run: |
+          mkdir ${{ github.workspace }}/ModLoader/mod/ModI18N
+          cd ${{ github.workspace }}/ModLoader/mod/ModI18N
+          wget -q https://github.com/NumberSir/DoL-I18n-Build/releases/latest/download/ModI18N.mod.zip
+
+          cd ${{ github.workspace }}/ModLoader/out
+          jq '. += ["mod/ModuleCssReplacer/ModuleCssReplacer.mod.zip"]' modList.json > modList_modified.json
+          cat modList_modified.json
+          mv modList_modified.json modList.json
+      # End Make i18n builtin
 
       - name: Inject ModLoader
         working-directory: ${{ github.workspace }}/ModLoader/out
@@ -472,12 +486,22 @@ jobs:
       - name: Copy img (Win)
         if: runner.os == 'Windows'
         run: copy -Path "${{ github.workspace }}/DoL/img" -Destination "${{ github.workspace }}/output" -Recurse
+      - name: Copy img (Linux)
+        if: runner.os != 'Windows'
+        run: cp -r "${{ github.workspace }}/DoL/img" "${{ github.workspace }}/output"
+
+      - name: Reorganize output
+        if: runner.os != 'Windows'
+        working-directory: ${{ github.workspace }}/output
+        run: |
+          rm "Degrees of Lewdity VERSION.html.mod-polyfill.html"
+          mv "Degrees of Lewdity VERSION.html.mod.html" "Degrees of Lewdity.html"
 
       - name: Archive Release (Artifact)
         uses: thedoctor0/zip-release@0.7.1
         with:
           type: 'zip'
-          filename: DoL-ModLoader-${{ github.sha }}.zip
+          filename: DoL-ModLoader-CHS.zip
           directory: ${{ github.workspace }}/output
 
       # make package  OK =========================================
@@ -492,7 +516,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Html Package-${{ github.sha }}
-          path: ${{ github.workspace }}/output/DoL-ModLoader-${{ github.sha }}.zip
+          path: ${{ github.workspace }}/output/DoL-ModLoader-CHS.zip
 
       - name: Get Current Time
         id: time
@@ -506,8 +530,8 @@ jobs:
         if: ${{ github.event_name == 'workflow_dispatch' }}
         with:
           files: |
-            output/DoL-ModLoader-${{ github.sha }}.zip
-            out-GameOriginalImagePack/GameOriginalImagePack.mod.zip
+            output/DoL-ModLoader-CHS.zip
+            # out-GameOriginalImagePack/GameOriginalImagePack.mod.zip
           name: Release v${{ github.event.inputs.version }}
           tag_name: v${{ github.event.inputs.version }}-${{ github.sha }}
           body: Release v${{ github.event.inputs.version }}-${{ github.sha }}
@@ -517,8 +541,8 @@ jobs:
         if: ${{ github.event_name != 'workflow_dispatch' }}
         with:
           files: |
-            output/DoL-ModLoader-${{ github.sha }}.zip
-            out-GameOriginalImagePack/GameOriginalImagePack.mod.zip
+            output/DoL-ModLoader-CHS.zip
+            # out-GameOriginalImagePack/GameOriginalImagePack.mod.zip
           name: Auto Release on ${{ steps.time.outputs.time }} (${{ github.sha }})
           tag_name: auto-${{ github.sha }}-${{ steps.time.outputs.time }}
           body: Auto Release on ${{ steps.time.outputs.time }} (${{ github.sha }})
