@@ -49,8 +49,8 @@ jobs:
           ref: TS
           #submodules: recursive
 
-      - name: Init Submodules
-        working-directory: ${{ github.workspace }}
+      - name: init ModLoader
+        working-directory: ${{ github.workspace }}/ModLoader
         run: git submodule update --init --recursive
 
 #      - name: ModLoader
@@ -412,12 +412,12 @@ jobs:
 
       - name: Build DoL (Linux)
         if: runner.os != 'Windows'
-        working-directory: ${{ github.workspace }}/DoL
+        working-directory: ${{ github.workspace }}/DOL
         run: ./compile.sh
 
       - name: Build DoL (Win)
         if: runner.os == 'Windows'
-        working-directory: ${{ github.workspace }}/DoL
+        working-directory: ${{ github.workspace }}/DOL
         run: ./compile.bat
 
       # /DoL  OK =========================================
