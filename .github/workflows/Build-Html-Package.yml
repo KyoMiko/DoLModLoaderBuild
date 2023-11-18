@@ -519,7 +519,7 @@ jobs:
         if: ${{ github.event_name == 'workflow_dispatch' }}
         with:
           files: |
-            output/DoL-ModLoader-${{ github.sha }}.zip
+            output/DoL-ModLoader-CHS.zip
             out-GameOriginalImagePack/GameOriginalImagePack.mod.zip
           name: Release v${{ github.event.inputs.version }}
           tag_name: v${{ github.event.inputs.version }}-${{ github.sha }}
@@ -530,7 +530,7 @@ jobs:
         if: ${{ github.event_name != 'workflow_dispatch' }}
         with:
           files: |
-            output/DoL-ModLoader-${{ github.sha }}.zip
+            output/DoL-ModLoader-CHS.zip
             out-GameOriginalImagePack/GameOriginalImagePack.mod.zip
           name: Auto Release on ${{ steps.time.outputs.time }} (${{ github.sha }})
           tag_name: auto-${{ github.sha }}-${{ steps.time.outputs.time }}
