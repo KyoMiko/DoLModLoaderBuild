@@ -443,7 +443,7 @@ jobs:
         working-directory: ${{ github.workspace }}/ModLoader/out
         run: |
           # get version numbers
-          modi18n_basename=$(basename ModI18N*.zip .zip)
+          modi18n_basename=$(basename ModI18N*.zip .mod.zip)
           ver_dol=$(echo $modi18n_basename | cut -d '-' -f 2)
           ver_chs=$(echo $modi18n_basename | cut -d '-' -f 4)
           echo "ver_dol=${ver_dol}" >> "$GITHUB_ENV"
@@ -514,7 +514,7 @@ jobs:
         uses: thedoctor0/zip-release@0.7.1
         with:
           type: 'zip'
-          filename: DoL-ModLoader-${ver_dol}-${ver_chs}.zip
+          filename: DoL-ModLoader-${{ env.ver_dol }}-${{ env.ver_chs }}.zip
           directory: ${{ github.workspace }}/output
 
       # make package  OK =========================================
@@ -529,7 +529,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Html Package-${{ github.sha }}
-          path: ${{ github.workspace }}/output/DoL-ModLoader-${ver_dol}-${ver_chs}.zip
+          path: ${{ github.workspace }}/output/DoL-ModLoader-${{ env.ver_dol }}-${{ env.ver_chs }}.zip
 
       - name: Get Current Time
         id: time
@@ -543,7 +543,7 @@ jobs:
         if: ${{ github.event_name == 'workflow_dispatch' }} && ${{ github.event.inputs.version != '' }}
         with:
           files: |
-            output/DoL-ModLoader-${ver_dol}-${ver_chs}.zip
+            output/DoL-ModLoader-${{ env.ver_dol }}-${{ env.ver_chs }}.zip
             # out-GameOriginalImagePack/GameOriginalImagePack.mod.zip
           name: Release v${{ github.event.inputs.version }}
           tag_name: v${{ github.event.inputs.version }}-${{ github.sha }}
@@ -554,7 +554,7 @@ jobs:
         if: ${{ github.event_name != 'workflow_dispatch' }}
         with:
           files: |
-            output/DoL-ModLoader-${ver_dol}-${ver_chs}.zip
+            output/DoL-ModLoader-${{ env.ver_dol }}-${{ env.ver_chs }}.zip
             # out-GameOriginalImagePack/GameOriginalImagePack.mod.zip
           name: Auto Release on ${{ steps.time.outputs.time }} (${{ github.sha }})
           tag_name: auto-${{ steps.time.outputs.time }}-${{ github.sha }}
