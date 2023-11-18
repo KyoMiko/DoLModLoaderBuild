@@ -413,7 +413,7 @@ jobs:
       - name: Build DoL (Linux)
         if: runner.os != 'Windows'
         working-directory: ${{ github.workspace }}/DoL
-        run: ./compile.sh
+        run: ./compile.sh && cp "Degrees of Lewdity*-dirty.html" "Degrees of Lewdity VERSION.html"
 
       - name: Build DoL (Win)
         if: runner.os == 'Windows'
