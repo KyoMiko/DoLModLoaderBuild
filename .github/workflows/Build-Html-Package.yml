@@ -432,13 +432,18 @@ jobs:
 #            ${{ github.workspace }}/ModLoader/out/
 
       # Make i18n builtin
-      - name: Inject i18n
+      - name: Download i18n-chs
+        uses: robinraju/release-downloader@v1.8
+        with:
+          repository: "NumberSir/DoL-I18n-Build"
+          latest: true
+          fileName: "ModI18N*.zip"
+          out-file-path: "${{ github.workspace }}/ModLoader/out"
+      - name: Inject i18n-chs
         working-directory: ${{ github.workspace }}/ModLoader/out
         run: |
           mkdir mod/ModI18N
-          pushd mod/ModI18N
-          wget -q https://github.com/NumberSir/DoL-I18n-Build/releases/latest/download/ModI18N.mod.zip
-          popd
+          mv ModI18N*.zip mod/ModI18N/ModI18N.mod.zip
 
           jq '. += ["mod/ModI18N/ModI18N.mod.zip"]' modList.json > modList_modified.json
           cat modList_modified.json
