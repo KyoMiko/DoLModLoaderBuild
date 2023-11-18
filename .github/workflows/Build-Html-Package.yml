@@ -540,7 +540,7 @@ jobs:
 
       - name: Archive Release (Releases Manually)
         uses: softprops/action-gh-release@v1
-        if: ${{ github.event_name == 'workflow_dispatch' }}
+        if: ${{ github.event_name == 'workflow_dispatch' }} && ${{ github.event.inputs.version != '' }}
         with:
           files: |
             output/DoL-ModLoader-${ver_dol}-${ver_chs}.zip
@@ -557,6 +557,6 @@ jobs:
             output/DoL-ModLoader-${ver_dol}-${ver_chs}.zip
             # out-GameOriginalImagePack/GameOriginalImagePack.mod.zip
           name: Auto Release on ${{ steps.time.outputs.time }} (${{ github.sha }})
-          tag_name: auto-${{ github.sha }}-${{ steps.time.outputs.time }}
+          tag_name: auto-${{ steps.time.outputs.time }}-${{ github.sha }}
           body: Auto Release on ${{ steps.time.outputs.time }} (${{ github.sha }})
           # prerelease: true
