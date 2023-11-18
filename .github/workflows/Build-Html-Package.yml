@@ -446,6 +446,8 @@ jobs:
           modi18n_basename=$(basename ModI18N*.zip .zip)
           ver_dol=$(echo $modi18n_basename | cut -d '-' -f 2)
           ver_chs=$(echo $modi18n_basename | cut -d '-' -f 4)
+          echo "ver_dol=${ver_dol}" >> "$GITHUB_ENV"
+          echo "ver_chs=${ver_chs}" >> "$GITHUB_ENV"
 
           mkdir mod/ModI18N
           mv ModI18N*.zip mod/ModI18N/ModI18N.mod.zip
