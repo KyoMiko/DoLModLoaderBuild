@@ -433,13 +433,13 @@ jobs:
 
       # Make i18n builtin
       - name: Inject i18n
+        working-directory: ${{ github.workspace }}/ModLoader/out
         run: |
-          mkdir ${{ github.workspace }}/ModLoader/mod/ModI18N
-          cd ${{ github.workspace }}/ModLoader/mod/ModI18N
-          wget https://github.com/NumberSir/DoL-I18n-Build/releases/latest/download/ModI18N.mod.zip
-          ls -la
+          mkdir mod/ModI18N
+          pushd mod/ModI18N
+          wget -q https://github.com/NumberSir/DoL-I18n-Build/releases/latest/download/ModI18N.mod.zip
+          popd
 
-          cd ${{ github.workspace }}/ModLoader/out
           jq '. += ["mod/ModI18N/ModI18N.mod.zip"]' modList.json > modList_modified.json
           cat modList_modified.json
           mv modList_modified.json modList.json
