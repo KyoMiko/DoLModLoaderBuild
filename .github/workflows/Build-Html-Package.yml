@@ -430,6 +430,19 @@ jobs:
 #            ${{ github.workspace }}/DoL/devTools/tweego/storyFormats/sugarcube-2/format.js
 #            ${{ github.workspace }}/ModLoader/out/
 
+      # Make i18n builtin
+      - name: Inject i18n
+        run: |
+          mkdir ${{ github.workspace }}/ModLoader/mod/ModI18N
+          cd ${{ github.workspace }}/ModLoader/mod/ModI18N
+          wget -q https://github.com/NumberSir/DoL-I18n-Build/releases/latest/download/ModI18N.mod.zip
+
+          cd ${{ github.workspace }}/ModLoader/out
+          jq '. += ["mod/ModuleCssReplacer/ModuleCssReplacer.mod.zip"]' modList.json > modList_modified.json
+          cat modList_modified.json
+          mv modList_modified.json modList.json
+      # End Make i18n builtin
+
       - name: Inject ModLoader
         working-directory: ${{ github.workspace }}/ModLoader/out
         run: |
