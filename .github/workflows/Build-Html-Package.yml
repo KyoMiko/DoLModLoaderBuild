@@ -435,13 +435,18 @@ jobs:
       - name: Download i18n-chs
         uses: robinraju/release-downloader@v1.8
         with:
-          repository: "NumberSir/DoL-I18n-Build"
+          repository: "Eltirosto/Degrees-of-Lewdity-Chinese-Localization"
           latest: true
           fileName: "ModI18N*.zip"
           out-file-path: "${{ github.workspace }}/ModLoader/out"
       - name: Inject i18n-chs
         working-directory: ${{ github.workspace }}/ModLoader/out
         run: |
+          # get version numbers
+          modi18n_basename=$(basename ModI18N*.zip .zip)
+          ver_dol=$(echo $modi18n_basename | cut -d '-' -f 2)
+          ver_chs=$(echo $modi18n_basename | cut -d '-' -f 4)
+
           mkdir mod/ModI18N
           mv ModI18N*.zip mod/ModI18N/ModI18N.mod.zip
 
@@ -507,7 +512,7 @@ jobs:
         uses: thedoctor0/zip-release@0.7.1
         with:
           type: 'zip'
-          filename: DoL-ModLoader-CHS.zip
+          filename: DoL-ModLoader-${ver_dol}-${ver_chs}.zip
           directory: ${{ github.workspace }}/output
 
       # make package  OK =========================================
@@ -522,7 +527,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Html Package-${{ github.sha }}
-          path: ${{ github.workspace }}/output/DoL-ModLoader-CHS.zip
+          path: ${{ github.workspace }}/output/DoL-ModLoader-${ver_dol}-${ver_chs}.zip
 
       - name: Get Current Time
         id: time
@@ -536,7 +541,7 @@ jobs:
         if: ${{ github.event_name == 'workflow_dispatch' }}
         with:
           files: |
-            output/DoL-ModLoader-CHS.zip
+            output/DoL-ModLoader-${ver_dol}-${ver_chs}.zip
             # out-GameOriginalImagePack/GameOriginalImagePack.mod.zip
           name: Release v${{ github.event.inputs.version }}
           tag_name: v${{ github.event.inputs.version }}-${{ github.sha }}
@@ -547,7 +552,7 @@ jobs:
         if: ${{ github.event_name != 'workflow_dispatch' }}
         with:
           files: |
-            output/DoL-ModLoader-CHS.zip
+            output/DoL-ModLoader-${ver_dol}-${ver_chs}.zip
             # out-GameOriginalImagePack/GameOriginalImagePack.mod.zip
           name: Auto Release on ${{ steps.time.outputs.time }} (${{ github.sha }})
           tag_name: auto-${{ github.sha }}-${{ steps.time.outputs.time }}
