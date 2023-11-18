@@ -412,12 +412,12 @@ jobs:
 
       - name: Build DoL (Linux)
         if: runner.os != 'Windows'
-        working-directory: ${{ github.workspace }}/DOL
+        working-directory: ${{ github.workspace }}/DoL
         run: ./compile.sh
 
       - name: Build DoL (Win)
         if: runner.os == 'Windows'
-        working-directory: ${{ github.workspace }}/DOL
+        working-directory: ${{ github.workspace }}/DoL
         run: ./compile.bat
 
       # /DoL  OK =========================================

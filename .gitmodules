@@ -1,5 +1,5 @@
 [submodule "DOL"]
-	path = DOL
+	path = DoL
 	url = https://gitgud.io/Vrelnir/degrees-of-lewdity.git
 	branch = master
 [submodule "ModLoader"]
