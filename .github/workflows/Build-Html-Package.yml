@@ -436,7 +436,8 @@ jobs:
         run: |
           mkdir ${{ github.workspace }}/ModLoader/mod/ModI18N
           cd ${{ github.workspace }}/ModLoader/mod/ModI18N
-          wget -q https://github.com/NumberSir/DoL-I18n-Build/releases/latest/download/ModI18N.mod.zip
+          wget https://github.com/NumberSir/DoL-I18n-Build/releases/latest/download/ModI18N.mod.zip
+          ls -la
 
           cd ${{ github.workspace }}/ModLoader/out
           jq '. += ["mod/ModI18N/ModI18N.mod.zip"]' modList.json > modList_modified.json
