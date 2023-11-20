@@ -329,53 +329,6 @@ jobs:
           destBase: ${{ github.workspace }}/ModLoader/out
           target: ${{ github.workspace }}/ModLoader/out
 
-      # ========= make GameOriginalImagePack =========
-      - name: Checkout GameOriginalImagePack
-        uses: actions/checkout@v4
-        with:
-          repository: Lyoko-Jeremie/GameOriginalImagePackMod
-          path: ${{ github.workspace }}/ModLoader/mod/GameOriginalImagePack
-          ref: master
-          #submodules: recursive
-      - name: Build GameOriginalImagePack
-        if: runner.os == 'Windows'
-        working-directory: ${{ github.workspace }}/ModLoader/mod/GameOriginalImagePack
-        run: |
-          yarn install
-          yarn run build:ts
-          yarn run build:webpack
-          yarn run build:tools
-      # copy game img , change boot.json GameVersion
-      - name: Copy img (Win)
-        if: runner.os == 'Windows'
-        working-directory: ${{ github.workspace }}/ModLoader/mod/GameOriginalImagePack
-        run: copy -Path "${{ github.workspace }}/DoL/img" -Destination "${{ github.workspace }}/ModLoader/mod/GameOriginalImagePack" -Recurse -Force
-      - name: ReadGameVersion
-        if: runner.os == 'Windows'
-        id: ReadGameVersion
-        working-directory: ${{ github.workspace }}
-        run: |
-          node "${{ github.workspace }}/readGameVersion.js" "${{ github.workspace }}/DOL/game/01-config/sugarcubeConfig.js"
-      # now we get the ${{ steps.ReadGameVersion.outputs.GameVersionString }}
-      - name: Make GameOriginalImagePack
-        if: runner.os == 'Windows'
-        working-directory: ${{ github.workspace }}/ModLoader/mod/GameOriginalImagePack
-        run: |
-          node "${{ github.workspace }}/ModLoader/mod/GameOriginalImagePack/dist-tools/bootJsonFillTool.js" "bootTemplate.json" "img" "${{ steps.ReadGameVersion.outputs.GameVersionString }}"
-          node "${{ github.workspace }}/ModLoader/dist-insertTools/packModZip.js" "boot.json"
-      - name: MKDIR
-        run: |
-          mkdir ${{ github.workspace }}/out-GameOriginalImagePack
-      - name: Copy GameOriginalImagePack
-        if: runner.os == 'Windows'
-        uses: Lyoko-Jeremie/js-copy-github-action@master
-        with:
-          srcBase: ${{ github.workspace }}/ModLoader/mod/GameOriginalImagePack/
-          source: ${{ github.workspace }}/ModLoader/mod/GameOriginalImagePack/GameOriginalImagePack.mod.zip
-          destBase: ${{ github.workspace }}/out-GameOriginalImagePack
-          target: ${{ github.workspace }}/out-GameOriginalImagePack
-      # ========= make GameOriginalImagePack ok =========
-
       - name: Copy dist-BeforeSC2
         uses: Lyoko-Jeremie/js-copy-github-action@master
         with:
@@ -449,6 +402,15 @@ jobs:
 #            ${{ github.workspace }}/DoL/devTools/tweego/storyFormats/sugarcube-2/format.js
 #            ${{ github.workspace }}/ModLoader/out/
 
+      - name: MKDIR
+        run: |
+          mkdir ${{ github.workspace }}/output
+          mkdir ${{ github.workspace }}/tmp
+          mkdir ${{ github.workspace }}/tmp/0 # i18n
+          mkdir ${{ github.workspace }}/tmp/4 # cheat
+          mkdir ${{ github.workspace }}/tmp/8 # csd
+          mkdir ${{ github.workspace }}/tmp/12 # cheat+csd
+
       # Make i18n builtin
       - name: Download i18n-chs
         uses: robinraju/release-downloader@v1.8
@@ -471,83 +433,104 @@ jobs:
           mv ModI18N*.zip mod/ModI18N/ModI18N.mod.zip
 
           jq '. += ["mod/ModI18N/ModI18N.mod.zip"]' modList.json > modList_modified.json
-          cat modList_modified.json
+          # cat modList_modified.json
           mv modList_modified.json modList.json
       # End Make i18n builtin
 
-      - name: Inject ModLoader
+      - name: Inject ModLoader With i18n
         working-directory: ${{ github.workspace }}/ModLoader/out
         run: |
           node "${{ github.workspace }}/ModLoader/out/dist-insertTools/insert2html.js" "${{ github.workspace }}/DoL/Degrees of Lewdity VERSION.html" "modList.json" "${{ github.workspace }}/ModLoader/out/dist-BeforeSC2/BeforeSC2.js"
+          mv "${{ github.workspace }}/DoL/Degrees of Lewdity VERSION.html.mod.html" "${{ github.workspace }}/tmp/0/Degrees of Lewdity.html"
 
-      - name: Inject ModLoader-compatibility
+      # Inject others
+      - name: Download Cheat
+        uses: robinraju/release-downloader@v1.8
+        with:
+          repository: "DoL-Lyra/Cheat"
+          latest: true
+          fileName: "Cheat-Lyra-*.mod.zip"
+          out-file-path: "${{ github.workspace }}/ModLoader/out"
+      - name: Download CSD
+        uses: robinraju/release-downloader@v1.8
+        with:
+          repository: "DoL-Lyra/CombatStatusDisplay"
+          latest: true
+          fileName: "CombatStatusDisplay-Lyra-*.mod.zip"
+          out-file-path: "${{ github.workspace }}/ModLoader/out"
+      - working-directory: ${{ github.workspace }}/ModLoader/out
+        run: |
+          mkdir mod/Cheat
+          mv Cheat-Lyra-*.mod.zip mod/Cheat/Cheat-Lyra.mod.zip
+          mkdir mod/CombatStatusDisplay
+          mv CombatStatusDisplay-Lyra-*.mod.zip mod/CombatStatusDisplay/CombatStatusDisplay-Lyra.mod.zip
+
+      - name: Inject ModLoader With i18n Cheat
         working-directory: ${{ github.workspace }}/ModLoader/out
         run: |
-          node "${{ github.workspace }}/ModLoader/out/dist-insertTools/insert2html-polyfill.js" "${{ github.workspace }}/DoL/Degrees of Lewdity VERSION.html" "modList.json" "${{ github.workspace }}/ModLoader/out/dist-BeforeSC2-comp/BeforeSC2.js" "${{ github.workspace }}/ModLoader/out/dist-BeforeSC2-comp/polyfillWebpack.js"
+          jq '. += ["mod/Cheat/Cheat-Lyra.mod.zip"]' modList.json > modList_4.json
+          node "${{ github.workspace }}/ModLoader/out/dist-insertTools/insert2html.js" "${{ github.workspace }}/DoL/Degrees of Lewdity VERSION.html" "modList_4.json" "${{ github.workspace }}/ModLoader/out/dist-BeforeSC2/BeforeSC2.js"
+          mv "${{ github.workspace }}/DoL/Degrees of Lewdity VERSION.html.mod.html" "${{ github.workspace }}/tmp/4/Degrees of Lewdity.html"
+
+      - name: Inject ModLoader With i18n CSD
+        working-directory: ${{ github.workspace }}/ModLoader/out
+        run: |
+          jq '. += ["mod/CombatStatusDisplay/CombatStatusDisplay-Lyra.mod.zip"]' modList.json > modList_8.json
+          node "${{ github.workspace }}/ModLoader/out/dist-insertTools/insert2html.js" "${{ github.workspace }}/DoL/Degrees of Lewdity VERSION.html" "modList_8.json" "${{ github.workspace }}/ModLoader/out/dist-BeforeSC2/BeforeSC2.js"
+          mv "${{ github.workspace }}/DoL/Degrees of Lewdity VERSION.html.mod.html" "${{ github.workspace }}/tmp/8/Degrees of Lewdity.html"
+
+      - name: Inject ModLoader With i18n Cheat CSD
+        working-directory: ${{ github.workspace }}/ModLoader/out
+        run: |
+          jq '. += ["mod/Cheat/Cheat-Lyra.mod.zip","mod/CombatStatusDisplay/CombatStatusDisplay-Lyra.mod.zip"]' modList.json > modList_12.json
+          node "${{ github.workspace }}/ModLoader/out/dist-insertTools/insert2html.js" "${{ github.workspace }}/DoL/Degrees of Lewdity VERSION.html" "modList_12.json" "${{ github.workspace }}/ModLoader/out/dist-BeforeSC2/BeforeSC2.js"
+          mv "${{ github.workspace }}/DoL/Degrees of Lewdity VERSION.html.mod.html" "${{ github.workspace }}/tmp/12/Degrees of Lewdity.html"
 
       # make package  Init =========================================
-      - name: MKDIR
+
+      # - name: Copy html
+      #   uses: Lyoko-Jeremie/js-copy-github-action@master
+      #   with:
+      #     srcBase: ${{ github.workspace }}/DoL/
+      #     source: ${{ github.workspace }}/DoL/Degrees of Lewdity VERSION.html.mod.html
+      #     target: ${{ github.workspace }}/output
+      # - name: Copy style
+      #   uses: Lyoko-Jeremie/js-copy-github-action@master
+      #   with:
+      #     srcBase: ${{ github.workspace }}/DoL/
+      #     source: ${{ github.workspace }}/DoL/style.css
+      #     target: ${{ github.workspace }}/output
+      # - name: Copy img (Linux)
+      #   if: runner.os != 'Windows'
+      #   run: cp -r "${{ github.workspace }}/DoL/img" "${{ github.workspace }}/output"
+      # - name: Archive Release (Artifact)
+      #   uses: thedoctor0/zip-release@0.7.1
+      #   with:
+      #     type: 'zip'
+      #     filename: DoL-ModLoader-${{ env.ver_dol }}-${{ env.ver_chs }}.zip
+      #     directory: ${{ github.workspace }}/output
+
+      - name: Packages
         run: |
-          mkdir ${{ github.workspace }}/output
+          ver=( 0 4 8 12 )
+          for v in "${ver[@]}"
+          do
+            cp ${{ github.workspace }}/DoL/style.css ${{ github.workspace }}/tmp/$v/
+            cp -r ${{ github.workspace }}/DoL/img ${{ github.workspace }}/tmp/$v/
+            pushd ${{ github.workspace }}/tmp/$v/
+            zip -r DoL-ModLoader-${{ env.ver_dol }}-${{ env.ver_chs }}-$v.zip *
+            mv DoL-ModLoader-*.zip ${{ github.workspace }}/output/
+            popd
+          done
 
-      - name: Copy html
-        uses: Lyoko-Jeremie/js-copy-github-action@master
-        with:
-          srcBase: ${{ github.workspace }}/DoL/
-          source: ${{ github.workspace }}/DoL/Degrees of Lewdity VERSION.html.mod.html
-          target: ${{ github.workspace }}/output
-      - name: Copy html-compatibility
-        uses: Lyoko-Jeremie/js-copy-github-action@master
-        with:
-          srcBase: ${{ github.workspace }}/DoL/
-          source: ${{ github.workspace }}/DoL/Degrees of Lewdity VERSION.html.mod-polyfill.html
-          target: ${{ github.workspace }}/output
-      - name: Copy style
-        uses: Lyoko-Jeremie/js-copy-github-action@master
-        with:
-          srcBase: ${{ github.workspace }}/DoL/
-          source: ${{ github.workspace }}/DoL/style.css
-          target: ${{ github.workspace }}/output
-#      - name: Copy img
-#        uses: Lyoko-Jeremie/js-copy-github-action@master
-#        with:
-#          srcBase: ${{ github.workspace }}/DoL/
-#          source: ${{ github.workspace }}/DoL/img/**/*
-#          target: ${{ github.workspace }}/output
-      - name: Copy img (Win)
-        if: runner.os == 'Windows'
-        run: copy -Path "${{ github.workspace }}/DoL/img" -Destination "${{ github.workspace }}/output" -Recurse
-      - name: Copy img (Linux)
-        if: runner.os != 'Windows'
-        run: cp -r "${{ github.workspace }}/DoL/img" "${{ github.workspace }}/output"
-
-      - name: Reorganize output
-        if: runner.os != 'Windows'
-        working-directory: ${{ github.workspace }}/output
-        run: |
-          rm "Degrees of Lewdity VERSION.html.mod-polyfill.html"
-          mv "Degrees of Lewdity VERSION.html.mod.html" "Degrees of Lewdity.html"
-
-      - name: Archive Release (Artifact)
-        uses: thedoctor0/zip-release@0.7.1
-        with:
-          type: 'zip'
-          filename: DoL-ModLoader-${{ env.ver_dol }}-${{ env.ver_chs }}.zip
-          directory: ${{ github.workspace }}/output
 
       # make package  OK =========================================
-
-      - name: Upload GameOriginalImagePack.mod.zip
-        uses: actions/upload-artifact@v3
-        with:
-          name: GameOriginalImagePack-mod-${{ github.sha }}
-          path: ${{ github.workspace }}/out-GameOriginalImagePack/GameOriginalImagePack.mod.zip
 
       - name: Upload
         uses: actions/upload-artifact@v3
         with:
           name: Html Package-${{ github.sha }}
-          path: ${{ github.workspace }}/output/DoL-ModLoader-${{ env.ver_dol }}-${{ env.ver_chs }}.zip
+          path: ${{ github.workspace }}/output/DoL-ModLoader-${{ env.ver_dol }}-${{ env.ver_chs }}*.zip
 
       - name: Get Current Time
         id: time
@@ -561,8 +544,7 @@ jobs:
         if: ${{ github.event_name == 'workflow_dispatch' }} && ${{ github.event.inputs.version != '' }}
         with:
           files: |
-            output/DoL-ModLoader-${{ env.ver_dol }}-${{ env.ver_chs }}.zip
-            # out-GameOriginalImagePack/GameOriginalImagePack.mod.zip
+            output/DoL-ModLoader-${{ env.ver_dol }}-${{ env.ver_chs }}*.zip
           name: Release v${{ github.event.inputs.version }}
           tag_name: v${{ github.event.inputs.version }}-${{ github.sha }}
           body: Release v${{ github.event.inputs.version }}-${{ github.sha }}
@@ -572,8 +554,7 @@ jobs:
         if: ${{ github.event_name != 'workflow_dispatch' }}
         with:
           files: |
-            output/DoL-ModLoader-${{ env.ver_dol }}-${{ env.ver_chs }}.zip
-            # out-GameOriginalImagePack/GameOriginalImagePack.mod.zip
+            output/DoL-ModLoader-${{ env.ver_dol }}-${{ env.ver_chs }}*.zip
           name: Auto Release on ${{ steps.time.outputs.time }} (${{ github.sha }})
           tag_name: auto-${{ steps.time.outputs.time }}-${{ github.sha }}
           body: Auto Release on ${{ steps.time.outputs.time }} (${{ github.sha }})
