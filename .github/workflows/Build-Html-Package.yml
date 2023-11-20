@@ -6,9 +6,6 @@ on:
   pull_request:
     branches: [ "master" ]
   workflow_dispatch:
-    inputs:
-      version:
-        description: "手动设定版本"
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -539,19 +536,8 @@ jobs:
           timeZone: UTC+8
           format: 'YYYY-MM-DD-HH-mm-ss'
 
-      - name: Archive Release (Releases Manually)
-        uses: softprops/action-gh-release@v1
-        if: ${{ github.event_name == 'workflow_dispatch' }} && ${{ github.event.inputs.version != '' }}
-        with:
-          files: |
-            output/DoL-ModLoader-${{ env.ver_dol }}-${{ env.ver_chs }}*.zip
-          name: Release v${{ github.event.inputs.version }}
-          tag_name: v${{ github.event.inputs.version }}-${{ github.sha }}
-          body: Release v${{ github.event.inputs.version }}-${{ github.sha }}
-
       - name: Archive Release (Releases Auto)
         uses: softprops/action-gh-release@v1
-        if: ${{ github.event_name != 'workflow_dispatch' }}
         with:
           files: |
             output/DoL-ModLoader-${{ env.ver_dol }}-${{ env.ver_chs }}*.zip
