@@ -1,10 +1,10 @@
-name: Build Html Package
+name: Build ModLoader
 
 on:
   push:
-    branches: [ "master" ]
+    branches: ["master"]
   pull_request:
-    branches: [ "master" ]
+    branches: ["master"]
   workflow_dispatch:
 
 env:
@@ -23,12 +23,11 @@ jobs:
 
       matrix:
         # https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs
-        os: [ ubuntu-latest ]
+        os: [ubuntu-latest]
         #os: [ ubuntu-latest, windows-latest ]
-        node-version: [ 18.x ]
+        node-version: [18.x]
 
     steps:
-
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
@@ -53,23 +52,22 @@ jobs:
         working-directory: ${{ github.workspace }}/ModLoader
         run: git submodule update --init --recursive
 
-#      - name: ModLoader
-#        uses: actions/checkout@v4
-#        with:
-#          repository: Lyoko-Jeremie/sugarcube-2-ModLoader
-#          path: ModLoader
-#          ref: master
-#          submodules: recursive
+      #      - name: ModLoader
+      #        uses: actions/checkout@v4
+      #        with:
+      #          repository: Lyoko-Jeremie/sugarcube-2-ModLoader
+      #          path: ModLoader
+      #          ref: master
+      #          submodules: recursive
 
-#      - name: DoL
-#        uses: actions/checkout@v4
-#        with:
-#          repository: Vrelnir/degrees-of-lewdity.git
-#          path: DoL
-#          ref: master
-#          github-server-url: 'https://gitgud.io'
-#          submodules: recursive
-
+      #      - name: DoL
+      #        uses: actions/checkout@v4
+      #        with:
+      #          repository: Vrelnir/degrees-of-lewdity.git
+      #          path: DoL
+      #          ref: master
+      #          github-server-url: 'https://gitgud.io'
+      #          submodules: recursive
 
       # /ModLoader  Init =========================================
 
@@ -216,6 +214,21 @@ jobs:
         with:
           srcBase: ${{ github.workspace }}/ModLoader/
           source: ${{ github.workspace }}/ModLoader/mod/I18nTweeList/I18nTweeList.mod.zip
+          destBase: ${{ github.workspace }}/ModLoader/out
+          target: ${{ github.workspace }}/ModLoader/out
+
+      - name: Build I18nScriptList
+        working-directory: ${{ github.workspace }}/ModLoader/mod/I18nScriptList
+        run: |
+          yarn install
+          yarn run build:ts
+          yarn run build:webpack
+          node "${{ github.workspace }}/ModLoader/dist-insertTools/packModZip.js" "boot.json"
+      - name: Copy I18nScriptList
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          srcBase: ${{ github.workspace }}/ModLoader/
+          source: ${{ github.workspace }}/ModLoader/mod/I18nScriptList/I18nScriptList.mod.zip
           destBase: ${{ github.workspace }}/ModLoader/out
           target: ${{ github.workspace }}/ModLoader/out
 
@@ -367,7 +380,6 @@ jobs:
           npm install
           node build.js -d -u -b 2
       # /SC2  OK =========================================
-
       - name: Copy SC2 format.js
         uses: Lyoko-Jeremie/js-copy-github-action@master
         with:
@@ -391,13 +403,13 @@ jobs:
 
       # /DoL  OK =========================================
 
-#      - name: Upload debug
-#        uses: actions/upload-artifact@v3
-#        with:
-#          name: Html debug-${{ github.sha }}
-#          path: |
-#            ${{ github.workspace }}/DoL/devTools/tweego/storyFormats/sugarcube-2/format.js
-#            ${{ github.workspace }}/ModLoader/out/
+      #      - name: Upload debug
+      #        uses: actions/upload-artifact@v3
+      #        with:
+      #          name: Html debug-${{ github.sha }}
+      #          path: |
+      #            ${{ github.workspace }}/DoL/devTools/tweego/storyFormats/sugarcube-2/format.js
+      #            ${{ github.workspace }}/ModLoader/out/
 
       - name: MKDIR
         run: |
@@ -433,7 +445,6 @@ jobs:
           # cat modList_modified.json
           mv modList_modified.json modList.json
       # End Make i18n builtin
-
       - name: Inject ModLoader With i18n
         working-directory: ${{ github.workspace }}/ModLoader/out
         run: |
@@ -520,7 +531,6 @@ jobs:
             popd
           done
 
-
       # make package  OK =========================================
 
       - name: Upload
@@ -534,7 +544,7 @@ jobs:
         uses: nanzm/get-time-action@master
         with:
           timeZone: UTC+8
-          format: 'YYYY-MM-DD-HH-mm-ss'
+          format: "YYYY-MM-DD-HH-mm-ss"
 
       - name: Archive Release (Releases Auto)
         uses: softprops/action-gh-release@v1
