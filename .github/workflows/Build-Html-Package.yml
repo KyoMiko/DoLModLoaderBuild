@@ -551,6 +551,14 @@ jobs:
           node "${{ github.workspace }}/ModLoader/out/dist-insertTools/insert2html.js" "${{ github.workspace }}/DoL/Degrees of Lewdity VERSION.html" "modList_12.json" "${{ github.workspace }}/ModLoader/out/dist-BeforeSC2/BeforeSC2.js"
           mv "${{ github.workspace }}/DoL/Degrees of Lewdity VERSION.html.mod.html" "${{ github.workspace }}/tmp/12/Degrees of Lewdity.html"
 
+      - name: Inject ModLoader-compatibility With i18n Cheat CSD
+        working-directory: ${{ github.workspace }}/ModLoader/out
+        run: |
+          jq '. += ["mod/Cheat/Cheat-Lyra.mod.zip","mod/CombatStatusDisplay/CombatStatusDisplay-Lyra.mod.zip"]' modList.json > modList_12_polyfill.json
+          node "${{ github.workspace }}/ModLoader/out/dist-insertTools/insert2html-polyfill.js" "${{ github.workspace }}/DoL/Degrees of Lewdity VERSION.html" "modList_12_polyfill.json" "${{ github.workspace }}/ModLoader/out/dist-BeforeSC2-comp/BeforeSC2.js" "${{ github.workspace }}/ModLoader/out/dist-BeforeSC2-comp/polyfillWebpack.js"
+          mv "${{ github.workspace }}/DoL/Degrees of Lewdity VERSION.html.mod-polyfill.html" "${{ github.workspace }}/tmp/12/Degrees of Lewdity.html"
+  
+
       # make package  Init =========================================
 
       # - name: Copy html
@@ -587,6 +595,15 @@ jobs:
             mv DoL-ModLoader-*.zip ${{ github.workspace }}/output/
             popd
           done
+
+      - name: Package Polyfill
+        run: |
+          cp ${{ github.workspace }}/DoL/style.css ${{ github.workspace }}/tmp/polyfill/
+          cp -r ${{ github.workspace }}/DoL/img ${{ github.workspace }}/tmp/polyfill/
+          pushd ${{ github.workspace }}/tmp/polyfill/
+          zip -r DoL-ModLoader-${{ env.ver_dol }}-${{ env.ver_chs }}-polyfill-12.zip *
+          mv DoL-ModLoader-*.zip ${{ github.workspace }}/output/
+          popd
 
       # make package  OK =========================================
 
