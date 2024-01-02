@@ -476,6 +476,7 @@ jobs:
           mkdir ${{ github.workspace }}/tmp/4 # cheat
           mkdir ${{ github.workspace }}/tmp/8 # csd
           mkdir ${{ github.workspace }}/tmp/12 # cheat+csd
+          mkdir ${{ github.workspace }}/tmp/polyfill # polyfill+cheat+csd
 
       # Make i18n builtin
       - name: Download i18n-chs
