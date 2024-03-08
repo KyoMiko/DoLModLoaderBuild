@@ -17,5 +17,5 @@ jobs:
           git config --global user.name "Sakari"
           git submodule update --remote --recursive
           git add -v .
-          git commit -m "Update Submodules"
+          git diff-index --quiet HEAD || git commit -m "Update Submodules"
           git push
