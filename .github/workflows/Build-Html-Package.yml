@@ -573,14 +573,14 @@ jobs:
         run: |
           jq '. += ["mod/Susato/Susato_zh.mod.zip","mod/CombatStatusDisplay/CombatStatusDisplay-Lyra.mod.zip"]' modList.json > modList_136.json
           node "${{ github.workspace }}/ModLoader/out/dist-insertTools/insert2html.js" "${{ github.workspace }}/DoL/Degrees of Lewdity VERSION.html" "modList_136.json" "${{ github.workspace }}/ModLoader/out/dist-BeforeSC2/BeforeSC2.js"
-          mv "${{ github.workspace }}/DoL/Degrees of Lewdity VERSION.html.mod.html" "${{ github.workspace }}/tmp/12/Degrees of Lewdity.html"
+          mv "${{ github.workspace }}/DoL/Degrees of Lewdity VERSION.html.mod.html" "${{ github.workspace }}/tmp/136/Degrees of Lewdity.html"
 
       - name: Inject ModLoader With i18n Susato Cheat CSD
         working-directory: ${{ github.workspace }}/ModLoader/out
         run: |
           jq '. += ["mod/Susato/Susato_zh.mod.zip","mod/Cheat/Cheat-Lyra.mod.zip","mod/CombatStatusDisplay/CombatStatusDisplay-Lyra.mod.zip"]' modList.json > modList_140.json
           node "${{ github.workspace }}/ModLoader/out/dist-insertTools/insert2html.js" "${{ github.workspace }}/DoL/Degrees of Lewdity VERSION.html" "modList_140.json" "${{ github.workspace }}/ModLoader/out/dist-BeforeSC2/BeforeSC2.js"
-          mv "${{ github.workspace }}/DoL/Degrees of Lewdity VERSION.html.mod.html" "${{ github.workspace }}/tmp/12/Degrees of Lewdity.html"
+          mv "${{ github.workspace }}/DoL/Degrees of Lewdity VERSION.html.mod.html" "${{ github.workspace }}/tmp/140/Degrees of Lewdity.html"
   
 
       # make package  Init =========================================
@@ -609,7 +609,7 @@ jobs:
 
       - name: Packages
         run: |
-          ver=( 0 4 8 12 )
+          ver=( 0 4 8 12 136 140 )
           for v in "${ver[@]}"
           do
             cp ${{ github.workspace }}/DoL/style.css ${{ github.workspace }}/tmp/$v/
