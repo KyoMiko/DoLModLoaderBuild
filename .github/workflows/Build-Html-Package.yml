@@ -52,6 +52,11 @@ jobs:
         working-directory: ${{ github.workspace }}/ModLoader
         run: git submodule update --init --recursive
 
+      - name: Patch ModLoader
+        working-directory: ${{ github.workspace }}
+        run: |
+          patch -p1 < patches/01-temporary-update-submodules.patch
+
       #      - name: ModLoader
       #        uses: actions/checkout@v4
       #        with:
