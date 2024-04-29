@@ -527,7 +527,7 @@ jobs:
           out-file-path: "${{ github.workspace }}/ModLoader/out"
       - name: Get Susato
         run: |
-          cp ${{ github.workspace }}/assets/susato-model_ZH_ver1.0.0.mod.zip ${{ github.workspace }}/ModLoader/out/Susato_zh.mod.zip
+          cp ${{ github.workspace }}/assets/susato-model_ZH_ver*.mod.zip ${{ github.workspace }}/ModLoader/out/Susato_zh.mod.zip
 
       # Rename and move mods
       - working-directory: ${{ github.workspace }}/ModLoader/out
