@@ -4,5 +4,5 @@
 	branch = master
 [submodule "ModLoader"]
 	path = ModLoader
-	url = https://github.com/Lyoko-Jeremie/sugarcube-2-ModLoader
+	url = https://github.com/Lyoko-Jeremie/sugarcube-2-ModLoader.git
 	branch = master
