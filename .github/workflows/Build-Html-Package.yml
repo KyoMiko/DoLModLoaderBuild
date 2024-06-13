@@ -52,10 +52,10 @@ jobs:
         working-directory: ${{ github.workspace }}/ModLoader
         run: git submodule update --init --recursive
 
-      - name: Patch ModLoader
-        working-directory: ${{ github.workspace }}
-        run: |
-          patch -p1 < patches/01-temporary-update-submodules.patch
+      # - name: Patch ModLoader
+      #   working-directory: ${{ github.workspace }}
+      #   run: |
+      #     patch -p1 < patches/01-temporary-update-submodules.patch
 
       #      - name: ModLoader
       #        uses: actions/checkout@v4
@@ -599,7 +599,7 @@ jobs:
           ver=( 0 4 8 12 136 140 )
           for v in "${ver[@]}"
           do
-            cp ${{ github.workspace }}/DoL/style.css ${{ github.workspace }}/tmp/$v/
+            # cp ${{ github.workspace }}/DoL/style.css ${{ github.workspace }}/tmp/$v/
             cp -r ${{ github.workspace }}/DoL/img ${{ github.workspace }}/tmp/$v/
             pushd ${{ github.workspace }}/tmp/$v/
             zip -r DoL-ModLoader-${{ env.ver_dol }}-${{ env.ver_chs }}-$v.zip *
@@ -610,7 +610,7 @@ jobs:
       # Package Polyfill
       - name: Package Polyfill
         run: |
-          cp ${{ github.workspace }}/DoL/style.css ${{ github.workspace }}/tmp/polyfill/
+          # cp ${{ github.workspace }}/DoL/style.css ${{ github.workspace }}/tmp/polyfill/
           cp -r ${{ github.workspace }}/DoL/img ${{ github.workspace }}/tmp/polyfill/
           pushd ${{ github.workspace }}/tmp/polyfill/
           zip -r DoL-ModLoader-${{ env.ver_dol }}-${{ env.ver_chs }}-polyfill-12.zip *
