@@ -40,6 +40,11 @@ jobs:
         with:
           submodules: true
 
+      - uses: actions/checkout@v4
+        with:
+          ref: assets
+          path: assets
+
       - name: SugarCube-2
         uses: actions/checkout@v4
         with:
