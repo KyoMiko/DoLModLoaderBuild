@@ -406,7 +406,6 @@ jobs:
           destBase: ${{ github.workspace }}/ModLoader/out
           target: ${{ github.workspace }}/ModLoader/out
 
-      
       - name: Build DoLLinkButtonFilter
         working-directory: ${{ github.workspace }}/ModLoader/mod/DoLLinkButtonFilter
         run: |
@@ -419,6 +418,21 @@ jobs:
         with:
           srcBase: ${{ github.workspace }}/ModLoader/
           source: ${{ github.workspace }}/ModLoader/mod/DoLLinkButtonFilter/DoLLinkButtonFilter.mod.zip
+          destBase: ${{ github.workspace }}/ModLoader/out
+          target: ${{ github.workspace }}/ModLoader/out
+
+      - name: Build HookMacroRng
+        working-directory: ${{ github.workspace }}/ModLoader/mod/HookMacroRng
+        run: |
+          yarn install
+          yarn run build:ts
+          yarn run build:webpack
+          node "${{ github.workspace }}/ModLoader/dist-insertTools/packModZip.js" "boot.json"
+      - name: Copy HookMacroRng
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          srcBase: ${{ github.workspace }}/ModLoader/
+          source: ${{ github.workspace }}/ModLoader/mod/HookMacroRng/HookMacroRng.mod.zip
           destBase: ${{ github.workspace }}/ModLoader/out
           target: ${{ github.workspace }}/ModLoader/out
 
