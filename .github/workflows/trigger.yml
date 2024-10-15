@@ -6,6 +6,8 @@ on:
       skip_DoLModLoaderBuild:
         description: "yes to skip DoLModLoaderBuild"
         required: false
+  schedule:
+    - cron: '31 1 * * *'
 
 jobs:
   check_update:
@@ -50,7 +52,7 @@ jobs:
     if: needs.check_update.outputs.NEED_UPDATE == 'true' && github.event.inputs.skip_DoLModLoaderBuild != 'yes'
 
   call-build:
-    name: call-DoLModLoaderBuild
-    uses: ./.github/workflows/DoLModLoaderBuild.yaml
+    name: call-Build-Html-Package
+    uses: ./.github/workflows/Build-Html-Package.yaml
     needs: call_update
     if: needs.check_update.outputs.NEED_UPDATE == 'true' && github.event.inputs.skip_DoLModLoaderBuild != 'yes'
