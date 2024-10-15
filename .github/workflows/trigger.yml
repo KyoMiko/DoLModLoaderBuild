@@ -37,6 +37,5 @@ jobs:
             echo "NEED_UPDATE=false" >> "$GITHUB_ENV"
           fi
       - name: call_update
-        uses: ./github/workflows/Update-Submodules.yaml
         if: env.NEED_UPDATE == 'true' && github.event.inputs.skip_DoLModLoaderBuild != 'yes'
-        
+        uses: ./.github/workflows/Update-Submodules.yaml
