@@ -7,7 +7,7 @@ on:
         description: "yes to skip DoLModLoaderBuild"
         required: false
   schedule:
-    - cron: '31 1 * * *'
+    - cron: '33 1 * * *'
 
 jobs:
   check_update:
