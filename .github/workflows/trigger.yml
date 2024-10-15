@@ -44,11 +44,11 @@ jobs:
           draft: true
   call-update:
     name: call-Update-Submodules
-    uses: .github/workflows/Update-Submodules.yaml
+    uses: .github/workflows/Update-Submodules.yaml@master
     needs: check_update
     if: ${{ needs.check_update.outputs.NEED_UPDATE == 'true'}}
   call-build:
     name: call-DoLModLoaderBuild
-    uses: .github/workflows/DoLModLoaderBuild.yaml
+    uses: .github/workflows/DoLModLoaderBuild.yaml@master
     needs: call_update
     if: ${{ needs.check_update.outputs.NEED_UPDATE == 'true'}}
