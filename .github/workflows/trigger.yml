@@ -53,6 +53,6 @@ jobs:
 
   call-build:
     name: call-Build-Html-Package
-    uses: ./.github/workflows/Build-Html-Package.yaml
+    uses: ./.github/workflows/Build-Html-Package.yml
     needs: call_update
     if: needs.check_update.outputs.NEED_UPDATE == 'true' && github.event.inputs.skip_DoLModLoaderBuild != 'yes'
