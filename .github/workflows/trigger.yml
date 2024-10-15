@@ -1,0 +1,42 @@
+name: Trigger
+
+on:
+  workflow_dispatch:
+    inputs:
+      skip_DoLModLoaderBuild:
+        description: "yes to skip DoLModLoaderBuild"
+        required: false
+
+jobs:
+  check_update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - name: run script
+        run: |
+          ORIGIN_TAG=$(curl -s https://api.github.com/repos/Eltirosto/Degrees-of-Lewdity-Chinese-Localization/releases/latest | jq -r '.tag_name')
+          CHS_VER=$(echo $ORIGIN_TAG | cut -d '-' -f3)
+          MODS_VER=$(git tag --sort=-v:refname | head -n 1 | cut -d '-' -f2)
+
+          if [[ "$CHS_VER" != "$MODS_VER" ]]
+          then
+            echo "Update needed"
+            echo "NEED_UPDATE=true" >> "$GITHUB_ENV"
+
+            NEW_VER="${ORIGIN_TAG//'chs-'/}"
+            DATE=$(date -d "+8 hours" +%m%d)
+            NEW_TAG=${NEW_VER}-${DATE}
+
+            echo $NEW_TAG
+            echo "NEW_TAG=$NEW_TAG" >> "$GITHUB_ENV"
+          else
+            echo "Already updated"
+            echo "NEED_UPDATE=false" >> "$GITHUB_ENV"
+          fi
+      - name: call_update
+        uses: ./github/workflows/Update-Submodules.yaml
+        if: env.NEED_UPDATE == 'true' && github.event.inputs.skip_DoLModLoaderBuild != 'yes'
+        
