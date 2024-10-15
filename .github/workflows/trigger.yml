@@ -19,7 +19,8 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
-      - name: run script
+      - id: run_script
+        name: run script
         run: |
           ORIGIN_TAG=$(curl -s https://api.github.com/repos/Eltirosto/Degrees-of-Lewdity-Chinese-Localization/releases/latest | jq -r '.tag_name')
           CHS_VER=$(echo $ORIGIN_TAG | cut -d '-' -f3)
