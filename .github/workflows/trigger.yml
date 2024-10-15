@@ -42,7 +42,7 @@ jobs:
             echo "NEED_UPDATE=false" >> "$GITHUB_OUTPUT"
           fi
       - name: Create tag
-        if: env.NEED_UPDATE == 'true'
+        if: steps.run_script.outputs.NEED_UPDATE == 'true'
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ env.NEW_TAG }}
