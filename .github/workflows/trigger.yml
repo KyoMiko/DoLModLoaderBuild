@@ -12,6 +12,8 @@ on:
 jobs:
   check_update:
     runs-on: ubuntu-latest
+    outputs:
+      NEED_UPDATE: ${{ steps.run_script.outputs.NEED_UPDATE }}
     steps:
       - uses: actions/checkout@v4
         with:
