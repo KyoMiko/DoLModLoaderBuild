@@ -7,7 +7,7 @@ on:
         description: "yes to skip DoLModLoaderBuild"
         required: false
   schedule:
-    - cron: '33 17 * * *'
+    - cron: "33 17 * * *"
 
 jobs:
   check_update:
@@ -42,12 +42,6 @@ jobs:
             echo "Already updated"
             echo "NEED_UPDATE=false" >> "$GITHUB_OUTPUT"
           fi
-      - name: Create tag
-        if: steps.run_script.outputs.NEED_UPDATE == 'true'
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ env.NEW_TAG }}
-          draft: true
 
   call-update:
     name: call-Update-Submodules
@@ -55,11 +49,13 @@ jobs:
     needs: check_update
     if: needs.check_update.outputs.NEED_UPDATE == 'true' && github.event.inputs.skip_DoLModLoaderBuild != 'yes'
 
-  call-build:
-    name: call-build
-    uses: ./.github/workflows/build.yml
-    needs: call-update
-    if: needs.check_update.outputs.NEED_UPDATE == 'true' && github.event.inputs.skip_DoLModLoaderBuild != 'yes'
-    with:
-      tag: ${{ needs.check_update.outputs.NEW_TAG }}
-    secrets: inherit
+  create-tags:
+    name: create-tags
+    needs: [check_update, call-update]
+    runs-on: ubuntu-latest
+    steps:
+      - if: needs.check_update.outputs.NEED_UPDATE == 'true'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ needs.check_update.outputs.NEW_TAG }}
+          draft: true
