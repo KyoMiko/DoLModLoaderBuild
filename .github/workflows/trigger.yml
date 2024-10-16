@@ -14,7 +14,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       NEED_UPDATE: ${{ steps.run_script.outputs.NEED_UPDATE }}
-      NEW_TAG: ${{ steps.run_script.outputs.NEW_TAG }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -37,29 +36,14 @@ jobs:
             NEW_TAG=${NEW_VER}-${DATE}
 
             echo $NEW_TAG
-            echo "NEW_TAG=$NEW_TAG" >> "$GITHUB_OUTPUT"
+            echo "NEW_TAG=$NEW_TAG" >> "$GITHUB_ENV"
           else
             echo "Already updated"
             echo "NEED_UPDATE=false" >> "$GITHUB_OUTPUT"
           fi
-
-  call-update:
-    name: call-Update-Submodules
-    uses: ./.github/workflows/Update-Submodules.yaml
-    needs: check_update
-    if: needs.check_update.outputs.NEED_UPDATE == 'true' && github.event.inputs.skip_DoLModLoaderBuild != 'yes'
-
-  create-tags:
-    name: create-tags
-    needs: [check_update, call-update]
-    if: needs.check_update.outputs.NEED_UPDATE == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+      - name: Create tag
+        if: env.NEED_UPDATE == 'true'
+        uses: softprops/action-gh-release@v1
         with:
-          fetch-depth: 0
-          fetch-tags: true
-      - uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ needs.check_update.outputs.NEW_TAG }}
+          tag_name: ${{ env.NEW_TAG }}
           draft: true
