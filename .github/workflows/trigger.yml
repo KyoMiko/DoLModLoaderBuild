@@ -54,9 +54,8 @@ jobs:
         run: |
           git config user.email "${{ secrets.GIT_EMAIL }}"
           git config user.name "${{ secrets.GIT_USERNAME }}"
+          git remote set-url origin https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository }}
           git commit --allow-empty -m ${{ env.NEW_TAG }}
           git tag ${{ env.NEW_TAG }}
           git push origin
           git push origin ${{ env.NEW_TAG }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
