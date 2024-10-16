@@ -54,7 +54,7 @@ jobs:
         run: |
           git config user.email "${{ secrets.GIT_EMAIL }}"
           git config user.name "${{ secrets.GIT_USERNAME }}"
-          git commit -m ${{ env.NEW_TAG }}
+          git commit --allow-empty -m ${{ env.NEW_TAG }}
           git tag ${{ env.NEW_TAG }}
           git push origin ${{ env.NEW_TAG }}
         env:
