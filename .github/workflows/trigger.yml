@@ -9,6 +9,10 @@ on:
   schedule:
     - cron: "33 17 * * *"
 
+env:
+  GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+  GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+
 jobs:
   check_update:
     runs-on: ubuntu-latest
