@@ -49,3 +49,12 @@ jobs:
         with:
           tag_name: ${{ env.NEW_TAG }}
           draft: true
+      - name: Create and push tag
+        if: env.NEED_UPDATE == 'true'
+        run: |
+          git config user.email "${{ secrets.GIT_EMAIL }}"
+          git config user.name "${{ secrets.GIT_USERNAME }}"
+          git tag ${{ env.NEW_TAG }}
+          git push origin ${{ env.NEW_TAG }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
