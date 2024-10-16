@@ -12,8 +12,6 @@ on:
 jobs:
   check_update:
     runs-on: ubuntu-latest
-    outputs:
-      NEED_UPDATE: ${{ steps.run_script.outputs.NEED_UPDATE }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -29,7 +27,7 @@ jobs:
           if [[ "$CHS_VER" != "$MODS_VER" ]]
           then
             echo "Update needed"
-            echo "NEED_UPDATE=true" >> $GITHUB_OUTPUT
+            echo "NEED_UPDATE=true" >> $GITHUB_ENV
 
             NEW_VER="${ORIGIN_TAG//'chs-'/}"
             DATE=$(date -d "+8 hours" +%m%d)
@@ -39,7 +37,7 @@ jobs:
             echo "NEW_TAG=$NEW_TAG" >> "$GITHUB_ENV"
           else
             echo "Already updated"
-            echo "NEED_UPDATE=false" >> "$GITHUB_OUTPUT"
+            echo "NEED_UPDATE=false" >> "$GITHUB_ENV"
           fi
       - name: Create tag
         if: env.NEED_UPDATE == 'true'
