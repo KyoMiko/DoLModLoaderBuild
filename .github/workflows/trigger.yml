@@ -14,6 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       NEED_UPDATE: ${{ steps.run_script.outputs.NEED_UPDATE }}
+      NEW_TAG: ${{ steps.run_script.outputs.NEW_TAG }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -36,7 +37,7 @@ jobs:
             NEW_TAG=${NEW_VER}-${DATE}
 
             echo $NEW_TAG
-            echo "NEW_TAG=$NEW_TAG" >> "$GITHUB_ENV"
+            echo "NEW_TAG=$NEW_TAG" >> "$GITHUB_OUTPUT"
           else
             echo "Already updated"
             echo "NEED_UPDATE=false" >> "$GITHUB_OUTPUT"
@@ -55,7 +56,10 @@ jobs:
     if: needs.check_update.outputs.NEED_UPDATE == 'true' && github.event.inputs.skip_DoLModLoaderBuild != 'yes'
 
   call-build:
-    name: call-Build-Html-Package
-    uses: ./.github/workflows/Build-Html-Package.yml
+    name: call-build
+    uses: ./.github/workflows/build.yml
     needs: call-update
     if: needs.check_update.outputs.NEED_UPDATE == 'true' && github.event.inputs.skip_DoLModLoaderBuild != 'yes'
+    with:
+      tag: ${{ needs.check_update.outputs.NEW_TAG }}
+    secrets: inherit
