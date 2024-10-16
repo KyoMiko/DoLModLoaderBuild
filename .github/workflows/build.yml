@@ -3,6 +3,8 @@ name: Build ModLoader
 on:
   push:
     branches: ["master"]
+    tags:
+      - "*"
     paths-ignore:
       - ".github/**"
   pull_request:
@@ -20,7 +22,7 @@ jobs:
   update:
     name: call-Update-Submodules
     uses: ./.github/workflows/Update-Submodules.yaml
-    
+
   build:
     runs-on: ${{ matrix.os }}
     needs: update
