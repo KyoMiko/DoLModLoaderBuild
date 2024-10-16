@@ -21,6 +21,7 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
+          persist-credentials: false
       - id: run_script
         name: run script
         run: |
